@@ -1,6 +1,7 @@
 package net.renzowit35.tutorialmodrw;
 
 import net.minecraft.world.item.CreativeModeTabs;
+import net.renzowit35.tutorialmodrw.block.ModBlocks;
 import net.renzowit35.tutorialmodrw.item.ModCreativeModeTabs;
 import net.renzowit35.tutorialmodrw.item.ModItems;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class MCCourseMod {
         ModCreativeModeTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
 
 
         // Register ourselves for server and other game events we are interested in.
