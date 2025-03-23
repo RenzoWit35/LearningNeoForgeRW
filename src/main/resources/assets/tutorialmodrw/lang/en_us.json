@@ -4,7 +4,10 @@
 
   "block.tutorialmodrw.black_opal_block":"Block of Black Opal",
   "block.tutorialmodrw.raw_black_opal_block":"Raw Black Opal Block",
-
+  "block.tutorialmodrw.black_opal_ore":"Black Opal Ore",
+  "block.tutorialmodrw.black_opal_deepslate_ore":"Black Opal Deepslate Ore",
+  "block.tutorialmodrw.black_opal_nether_ore":"Black Opal Nether Ore",
+  "block.tutorialmodrw.black_opal_end_ore":"Black Opal End Ore",
 
 
   "itemGroup.tutorialmodrw.black_opal_items_tab": "Opal Items",
