@@ -2,6 +2,8 @@
   "item.tutorialmodrw.black_opal":"Black Opal",
   "item.tutorialmodrw.raw_black_opal":"Raw Black Opal",
   "item.tutorialmodrw.chainsaw":"Chainsaw",
+  "item.tutorialmodrw.tomato":"Tomato",
+  "item.tutorialmodrw.frostfire_ice":"FrostFire Ice",
 
   "block.tutorialmodrw.black_opal_block":"Block of Black Opal",
   "block.tutorialmodrw.raw_black_opal_block":"Raw Black Opal Block",
@@ -9,6 +11,16 @@
   "block.tutorialmodrw.black_opal_deepslate_ore":"Black Opal Deepslate Ore",
   "block.tutorialmodrw.black_opal_nether_ore":"Black Opal Nether Ore",
   "block.tutorialmodrw.black_opal_end_ore":"Black Opal End Ore",
+  "block.tutorialmodrw.magic_block":"Magic Block",
+
+
+  "tooltip.tutorialmodrw.chainsaw.tooltip.1": "§aSpecial Use",
+  "tooltip.tutorialmodrw.chainsaw.tooltip.2": "§2§IRight Click§r on wood with item to mine it",
+  "tooltip.tutorialmodrw.chainsaw.tooltip.shift": "Press §e§IShift§r For More Infomation!",
+
+  "tooltip.tutorialmodrw.magic_block.tooltip.1": "§bDrop Items on top and they may change",
+
+  "tooltip.tutorialmodrw.tomato.tooltip.1": "§2Very healthy",
 
 
   "itemGroup.tutorialmodrw.black_opal_items_tab": "Opal Items",

@@ -10,6 +10,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.renzowit35.tutorialmodrw.MCCourseMod;
+import net.renzowit35.tutorialmodrw.block.custom.MagicBlock;
 import net.renzowit35.tutorialmodrw.item.ModItems;
 
 import java.util.function.Supplier;
@@ -40,6 +41,9 @@ public class ModBlocks {
     public static final DeferredBlock<Block> BLACK_OPAL_END_ORE = registerblock("black_opal_end_ore",
             () -> new DropExperienceBlock(UniformInt.of(2, 5),
                     BlockBehaviour.Properties.of().strength(4f).requiresCorrectToolForDrops()));
+
+    public static final DeferredBlock<Block> MAGIC_BLOCK = registerblock("magic_block",
+            () -> new MagicBlock(BlockBehaviour.Properties.of().strength(4f).requiresCorrectToolForDrops()));
 
 
 
