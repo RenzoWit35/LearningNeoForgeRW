@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "mccourse:raw_black_opal_block"
+          "name": "tutorialmodrw:raw_black_opal_block"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "mccourse:blocks/raw_black_opal_block"
+  "random_sequence": "tutorialmodrw:blocks/raw_black_opal_block"
 }

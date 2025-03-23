@@ -26,7 +26,7 @@
                   }
                 }
               ],
-              "name": "mccourse:black_opal_end_ore"
+              "name": "tutorialmodrw:black_opal_end_ore"
             },
             {
               "type": "minecraft:item",
@@ -35,8 +35,8 @@
                   "add": false,
                   "count": {
                     "type": "minecraft:uniform",
-                    "max": 7.0,
-                    "min": 4.0
+                    "max": 9.0,
+                    "min": 3.0
                   },
                   "function": "minecraft:set_count"
                 },
@@ -49,7 +49,7 @@
                   "function": "minecraft:explosion_decay"
                 }
               ],
-              "name": "mccourse:raw_black_opal"
+              "name": "tutorialmodrw:raw_black_opal"
             }
           ]
         }
@@ -57,5 +57,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "mccourse:blocks/black_opal_end_ore"
+  "random_sequence": "tutorialmodrw:blocks/black_opal_end_ore"
 }
