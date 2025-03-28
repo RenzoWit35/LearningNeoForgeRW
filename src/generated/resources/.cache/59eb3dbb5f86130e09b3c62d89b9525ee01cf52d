@@ -1,0 +1,8 @@
+// 1.21.1	2025-03-28T22:55:36.0722115	Loot Tables
+d54e7c09cfa948909edd51a5b47c4290954b800f data/tutorialmodrw/loot_table/blocks/black_opal_block.json
+62b71cc0da8c189ff3d696331c1a63a2c34bf9a7 data/tutorialmodrw/loot_table/blocks/black_opal_deepslate_ore.json
+b8fe0936648ca0e5351450967baf5ecb4dc19625 data/tutorialmodrw/loot_table/blocks/black_opal_end_ore.json
+bae21979b435f0c400b597118bd2af20cfd2a82f data/tutorialmodrw/loot_table/blocks/black_opal_nether_ore.json
+d84f235c614c066ef88f228c88c8ac921ef4baa7 data/tutorialmodrw/loot_table/blocks/black_opal_ore.json
+f588583954a3bc29904b760a8b3b45c5b30f9b7c data/tutorialmodrw/loot_table/blocks/magic_block.json
+f350a279206cffca424a0c87926c82319399e397 data/tutorialmodrw/loot_table/blocks/raw_black_opal_block.json

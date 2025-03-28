@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.renzowit35.tutorialmodrw.item.ModItems;
+import net.renzowit35.tutorialmodrw.util.ModTags;
 
 import java.util.List;
 
@@ -44,8 +45,7 @@ public class MagicBlock extends Block {
     }
 
     private boolean isValidItem(ItemStack item) {
-        return item.getItem() == ModItems.RAW_BLACK_OPAL.get()
-                || item.getItem() == Items.COAL || item.getItem() == Items.OBSIDIAN;
+        return item.is(ModTags.Items.TRANSFORMABLE_ITEM);
     }
 
     @Override

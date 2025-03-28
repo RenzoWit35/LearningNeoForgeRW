@@ -1,0 +1,4 @@
+// 1.21.1	2025-03-28T22:55:36.0817995	Tags for minecraft:block mod id tutorialmodrw
+1f53f7e865725dbcb8ac3e1de706ff7474a8bcee data/minecraft/tags/block/mineable/pickaxe.json
+74485cae43b3218805bb51883c3faf5342a919b7 data/minecraft/tags/block/needs_diamond_tool.json
+e74fb9aa8519667cb5230a6c0b8c1f1698cf8b66 data/minecraft/tags/block/needs_iron_tool.json

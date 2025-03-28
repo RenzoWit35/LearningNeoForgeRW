@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 50,
+  "experience": 0.3,
+  "group": "black_opal",
+  "ingredient": {
+    "item": "tutorialmodrw:black_opal_nether_ore"
+  },
+  "result": {
+    "count": 1,
+    "id": "tutorialmodrw:black_opal"
+  }
+}
