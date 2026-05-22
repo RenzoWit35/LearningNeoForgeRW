@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cozy Music Visualizer</title>
+  <style>
+    :root {
+      --bg1: #1b0f12;
+      --bg2: #2f1316;
+      --amber: #f2b66d;
+      --orange: #d96b3b;
+      --red: #8f2d2f;
+      --gold: #f3d9a2;
+      --violet: #6f4b74;
+      --text: #f8e9cc;
+      --muted: #cfb88e;
+      --ok: #8bcf9b;
+      --warn: #e7b66b;
+      --bad: #d16d6d;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", Roboto, system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 30% 20%, #3c1e23 0%, var(--bg1) 48%, #130b0d 100%);
+    }
+
+    #canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .ui {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      right: 1rem;
+      display: grid;
+      gap: 0.75rem;
+      pointer-events: none;
+    }
+
+    .panel {
+      pointer-events: auto;
+      max-width: 520px;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(135deg, rgba(50, 23, 29, 0.76), rgba(25, 14, 17, 0.72));
+      border: 1px solid rgba(243, 217, 162, 0.18);
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35), inset 0 0 30px rgba(242, 182, 109, 0.05);
+    }
+
+    h1 {
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+      letter-spacing: 0.03em;
+      font-weight: 650;
+      color: var(--gold);
+    }
+
+    p { margin: 0.2rem 0; color: var(--muted); font-size: 0.88rem; line-height: 1.35; }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.7rem; }
+
+    button, .file-label {
+      border: 1px solid rgba(243, 217, 162, 0.25);
+      background: linear-gradient(180deg, rgba(242, 182, 109, 0.18), rgba(217, 107, 59, 0.13));
+      color: var(--text);
+      border-radius: 10px;
+      padding: 0.5rem 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 180ms ease, filter 200ms ease, border-color 220ms ease;
+      font-size: 0.85rem;
+    }
+
+    button:hover, .file-label:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+      border-color: rgba(243, 217, 162, 0.45);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    input[type="file"] { display: none; }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.bad { color: var(--bad); }
+
+    .meters {
+      margin-top: 0.6rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.45rem;
+    }
+
+    .meter {
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 40px;
+      position: relative;
+    }
+
+    .meter span {
+      position: absolute;
+      inset: 0;
+      width: 18%;
+      background: linear-gradient(90deg, rgba(111, 75, 116, 0.65), rgba(242, 182, 109, 0.92));
+      box-shadow: 0 0 18px rgba(242, 182, 109, 0.32);
+      transition: width 90ms linear;
+    }
+
+    .meter label {
+      position: absolute;
+      left: 0.5rem;
+      top: 0.35rem;
+      font-size: 0.67rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(248, 233, 204, 0.9);
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div class="ui">
+    <div class="panel">
+      <h1>Cozy Audio Visualizer</h1>
+      <p>Warm ambient motion reacts to <strong>bass</strong>, <strong>midrange</strong>, and <strong>high frequencies</strong> from mic input or uploaded audio.</p>
+      <div class="controls">
+        <button id="micBtn">Use Microphone</button>
+        <label class="file-label" for="audioFile">Upload Audio File</label>
+        <input id="audioFile" type="file" accept="audio/*" />
+        <button id="stopBtn" disabled>Stop</button>
+      </div>
+      <div id="status" class="status">Choose an input source to begin.</div>
+      <div class="meters">
+        <div class="meter"><label>Bass</label><span id="bassMeter"></span></div>
+        <div class="meter"><label>Mids</label><span id="midMeter"></span></div>
+        <div class="meter"><label>Highs</label><span id="highMeter"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const micBtn = document.getElementById('micBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const audioFile = document.getElementById('audioFile');
+    const statusEl = document.getElementById('status');
+
+    const bassMeter = document.getElementById('bassMeter');
+    const midMeter = document.getElementById('midMeter');
+    const highMeter = document.getElementById('highMeter');
+
+    let audioCtx = null;
+    let analyser = null;
+    let sourceNode = null;
+    let mediaElement = null;
+    let micStream = null;
+    let animationId = null;
+
+    let bassSmooth = 0;
+    let midSmooth = 0;
+    let highSmooth = 0;
+    let ambiencePhase = 0;
+
+    const particles = Array.from({ length: 140 }, () => ({
+      x: Math.random(), y: Math.random(),
+      vx: (Math.random() - 0.5) * 0.00045,
+      vy: (Math.random() - 0.5) * 0.00035,
+      size: Math.random() * 2.2 + 0.4,
+      twinkle: Math.random() * Math.PI * 2
+    }));
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(innerWidth * dpr);
+      canvas.height = Math.floor(innerHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function setStatus(text, kind = '') {
+      statusEl.textContent = text;
+      statusEl.className = `status ${kind}`;
+    }
+
+    function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+
+    function smooth(current, target, t) {
+      return current + (target - current) * t;
+    }
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (!analyser) {
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 4096;
+        analyser.smoothingTimeConstant = 0.86;
+      }
+      return { audioCtx, analyser };
+    }
+
+    function stopAll() {
+      if (sourceNode) {
+        try { sourceNode.disconnect(); } catch {}
+        sourceNode = null;
+      }
+      if (mediaElement) {
+        mediaElement.pause();
+        mediaElement.src = '';
+        mediaElement.remove();
+        mediaElement = null;
+      }
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+      }
+      stopBtn.disabled = true;
+      setStatus('Stopped. Choose another input source anytime.', 'warn');
+    }
+
+    async function startMic() {
+      stopAll();
+      const { audioCtx, analyser } = ensureAudio();
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        sourceNode = audioCtx.createMediaStreamSource(micStream);
+        sourceNode.connect(analyser);
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        stopBtn.disabled = false;
+        setStatus('Microphone connected. Speak, hum, or play music nearby.', 'ok');
+      } catch (err) {
+        setStatus('Microphone permission denied or unavailable. Try file upload instead.', 'bad');
+      }
+    }
+
+    async function startFile(file) {
+      if (!file) return;
+      stopAll();
+      const { audioCtx, analyser } = ensureAudio();
+
+      mediaElement = document.createElement('audio');
+      mediaElement.src = URL.createObjectURL(file);
+      mediaElement.loop = true;
+      mediaElement.crossOrigin = 'anonymous';
+
+      sourceNode = audioCtx.createMediaElementSource(mediaElement);
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      try {
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        await mediaElement.play();
+        stopBtn.disabled = false;
+        setStatus(`Now playing: ${file.name}`, 'ok');
+      } catch (err) {
+        setStatus('Could not play this audio file. Try another format.', 'bad');
+      }
+    }
+
+    function getBandEnergy(freqData, fromHz, toHz, sampleRate) {
+      const binCount = freqData.length;
+      const nyquist = sampleRate / 2;
+      const fromIndex = Math.max(0, Math.floor((fromHz / nyquist) * binCount));
+      const toIndex = Math.min(binCount - 1, Math.ceil((toHz / nyquist) * binCount));
+
+      let sum = 0;
+      let count = 0;
+      for (let i = fromIndex; i <= toIndex; i++) {
+        sum += freqData[i];
+        count++;
+      }
+      if (!count) return 0;
+      return (sum / count) / 255;
+    }
+
+    function draw() {
+      animationId = requestAnimationFrame(draw);
+      const w = innerWidth;
+      const h = innerHeight;
+
+      ctx.clearRect(0, 0, w, h);
+
+      let bass = 0, mid = 0, high = 0;
+
+      if (analyser && audioCtx) {
+        const freqData = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(freqData);
+
+        bass = getBandEnergy(freqData, 20, 250, audioCtx.sampleRate);
+        mid = getBandEnergy(freqData, 250, 2000, audioCtx.sampleRate);
+        high = getBandEnergy(freqData, 2000, 20000, audioCtx.sampleRate);
+      }
+
+      bassSmooth = smooth(bassSmooth, bass, 0.09);
+      midSmooth = smooth(midSmooth, mid, 0.12);
+      highSmooth = smooth(highSmooth, high, 0.16);
+
+      bassMeter.style.width = `${(clamp01(bassSmooth) * 100).toFixed(1)}%`;
+      midMeter.style.width = `${(clamp01(midSmooth) * 100).toFixed(1)}%`;
+      highMeter.style.width = `${(clamp01(highSmooth) * 100).toFixed(1)}%`;
+
+      const warmth = 0.4 + bassSmooth * 0.6;
+      ambiencePhase += 0.004 + bassSmooth * 0.01;
+
+      const grad = ctx.createRadialGradient(
+        w * (0.5 + Math.sin(ambiencePhase * 0.35) * 0.04),
+        h * (0.45 + Math.cos(ambiencePhase * 0.28) * 0.04),
+        50,
+        w / 2,
+        h / 2,
+        Math.max(w, h) * 0.7
+      );
+      grad.addColorStop(0, `rgba(242, 182, 109, ${0.08 + warmth * 0.23})`);
+      grad.addColorStop(0.45, `rgba(143, 45, 47, ${0.16 + midSmooth * 0.2})`);
+      grad.addColorStop(1, `rgba(20, 9, 12, 0.96)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      const corePulse = 90 + bassSmooth * 190;
+      const coreX = w * 0.5;
+      const coreY = h * 0.58;
+
+      for (let i = 0; i < 4; i++) {
+        const radius = corePulse + i * (48 + midSmooth * 24) + Math.sin(ambiencePhase + i) * 6;
+        const alpha = 0.16 - i * 0.03 + bassSmooth * 0.07;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(242, ${155 + i * 8}, ${90 + i * 12}, ${Math.max(alpha, 0.02)})`;
+        ctx.shadowBlur = 28 + midSmooth * 36;
+        ctx.shadowColor = 'rgba(242,182,109,0.45)';
+        ctx.arc(coreX, coreY, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+
+      const orbCount = 7;
+      for (let i = 0; i < orbCount; i++) {
+        const angle = ambiencePhase * (0.35 + i * 0.04) + i * 0.9;
+        const orbit = 120 + i * 32 + midSmooth * 140;
+        const x = coreX + Math.cos(angle) * orbit * 0.9;
+        const y = coreY - 70 + Math.sin(angle * 1.3) * orbit * 0.4;
+        const r = 15 + midSmooth * 42 * (0.45 + i / orbCount);
+        const hueShift = Math.sin(ambiencePhase + i) * 8;
+
+        const orbGrad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        orbGrad.addColorStop(0, `rgba(${245 - i * 8}, ${173 + hueShift}, ${120 + i * 4}, ${0.42 + midSmooth * 0.3})`);
+        orbGrad.addColorStop(1, 'rgba(111,75,116,0.03)');
+
+        ctx.beginPath();
+        ctx.fillStyle = orbGrad;
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      particles.forEach((p, idx) => {
+        p.x += p.vx + (Math.sin(ambiencePhase + idx) * 0.00007);
+        p.y += p.vy - bassSmooth * 0.00022;
+
+        if (p.x < -0.03) p.x = 1.03;
+        if (p.x > 1.03) p.x = -0.03;
+        if (p.y < -0.03) p.y = 1.03;
+        if (p.y > 1.03) p.y = -0.03;
+
+        const x = p.x * w;
+        const y = p.y * h;
+        const tw = (Math.sin(ambiencePhase * 2 + p.twinkle) + 1) * 0.5;
+        const sparkle = clamp01(highSmooth * 1.5) * (0.28 + tw * 0.72);
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(243, 217, 162, ${0.04 + sparkle * 0.36})`;
+        ctx.arc(x, y, p.size + sparkle * 2.4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      const vignette = ctx.createRadialGradient(w/2, h/2, Math.min(w, h) * 0.35, w/2, h/2, Math.max(w, h) * 0.72);
+      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      vignette.addColorStop(1, 'rgba(0,0,0,0.35)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    micBtn.addEventListener('click', startMic);
+    stopBtn.addEventListener('click', stopAll);
+    audioFile.addEventListener('change', (e) => startFile(e.target.files?.[0]));
+
+    draw();
+  </script>
+</body>
+</html>
